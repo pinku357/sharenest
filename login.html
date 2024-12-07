@@ -51,12 +51,12 @@
   </script> 
   <script>
     window.onload = function() {
-    const loggedInUserId = localStorage.getItem('loggedInUserId');
-    console.log('LoggedInUserId:', loggedInUserId);
-    if (loggedInUserId && !sessionStorage.getItem('redirected')) {
+    const UserId = localStorage.getItem('UserId');
+    console.log('UserId:', UserId);
+    if (UserId && !sessionStorage.getItem('redirected')) {
         console.log('Redirecting to homepage');
         sessionStorage.setItem('redirected', 'true');
-        window.location.href = 'homepage.html';
+        window.location.href = 'index.html';
     } else {
         console.log('No redirection');
         sessionStorage.removeItem('redirected');
