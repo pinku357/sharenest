@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Upload Website</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+        }
+        input, textarea {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2><span id="User" style="color: rgb(0, 0, 0);"></span> Uploading...</h2>
+    <input type="text" id="title" placeholder="Enter a title">
+    <input type="url" id="link" placeholder="Enter a link">
+    <textarea id="description" placeholder="Enter a description"></textarea>
+    <input type="file" id="mediaUpload">
+    <button onclick="uploadData()">Upload</button>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBeNJSFm34wAfSme7fCQHaO6XAe0-lZAsw",
+            authDomain: "smsa-e4136.firebaseapp.com",
+            databaseURL: "https://smsa-e4136-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "smsa-e4136",
+            storageBucket: "smsa-e4136.firebasestorage.app",
+            messagingSenderId: "613252061504",
+            appId: "1:613252061504:web:4bc7abecf49bd4b0fc02a5"
+        };
+        
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        async function uploadToCloudinary(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'pinku_preset'); // Replace with your upload preset
+            
+            const response = await fetch('https://api.cloudinary.com/v1_1/djfjn4ykb/image/upload', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            return data.secure_url;
+        }
+
+        async function uploadData() {
+            const userName = document.getElementById('User').textContent;
+            const title = document.getElementById('title').value;
+            const link = document.getElementById('link').value;
+            const description = document.getElementById('description').value;
+            const mediaFile = document.getElementById('mediaUpload').files[0];
+
+            if (!title || !link || !description || !mediaFile) {
+                alert('Please fill out all fields and upload a file.');
+                return;
+            }
+
+            try {
+                const mediaUrl = await uploadToCloudinary(mediaFile);
+
+                const newDataRef = database.ref('uploads').push();
+                newDataRef.set({
+                    name: userName,
+                    title: title,
+                    link: link,
+                    description: description,
+                    mediaUrl: mediaUrl
+                });
+                
+                alert('Data uploaded successfully!');
+                document.getElementById('userName').value = '';
+                document.getElementById('title').value = '';
+                document.getElementById('link').value = '';
+                document.getElementById('description').value = '';
+                document.getElementById('mediaUpload').value = '';
+            } catch (error) {
+                console.error('Error uploading data:', error);
+            }
+        }
+    </script>    
+  <script type="module" src="script/homepage.js"></script>
+</body>
+</html>

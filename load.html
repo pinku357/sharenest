@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Uploaded Data</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        /* Styling remains the same */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fafafa;
+            margin: 0;
+            padding: 0;
+            color: #262626;
+        }
+
+        h2 {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.8em;
+            padding: 0 10px;
+        }
+
+        #dataContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border: 1px solid #dbdbdb;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding-bottom: 3%;
+        }
+
+        .card img {
+            width: 100%;
+            display: block;
+        }
+
+        .card-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin: 5px 0;
+            padding: 5px 15px;
+        }
+
+        .card-description {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            font-size: 0.9em;
+            color: #8e8e8e;
+            word-wrap: break-word;
+            padding: 0px 15px 10px;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            border-top: 1px solid #dbdbdb;
+            font-size: 0.9em;
+        }
+
+        .show-more {
+            font-size: 0.9em;
+            color: #0062ff;
+            word-wrap: break-word;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+
+        .delete-btn {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background-color: #ff1a1a;
+        }
+    </style>
+</head>
+
+<body>
+    <span id="User" style="color: rgb(0, 0, 0); font-size: large;"></span>
+    <div id="dataContainer"></div>
+    
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBeNJSFm34wAfSme7fCQHaO6XAe0-lZAsw",
+            authDomain: "smsa-e4136.firebaseapp.com",
+            databaseURL: "https://smsa-e4136-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "smsa-e4136",
+            storageBucket: "smsa-e4136.firebasestorage.app",
+            messagingSenderId: "613252061504",
+            appId: "1:613252061504:web:4bc7abecf49bd4b0fc02a5"
+        };
+    
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+
+    // Function to add interaction (like or comment)
+    function addInteraction(cardKey, interactionType, commentText = "") {
+        const userName = document.getElementById("User").textContent;
+
+        if (!userName) {
+            alert("User not identified. Please log in or provide your name.");
+            return;
+        }
+
+        const interactionRef = database.ref(`uploads/${cardKey}/interactions`);
+
+        if (interactionType === "like") {
+            interactionRef.child("likes").child(userName).set(true);
+        } else if (interactionType === "comment") {
+            const commentKey = interactionRef.child("comments").push().key;
+            interactionRef.child("comments").child(commentKey).set({
+                user: userName,
+                text: commentText,
+                timestamp: new Date().toISOString(),
+            });
+        }
+    }
+
+    // Function to load interactions and display them
+    function loadInteractions(cardKey, cardElement) {
+        const interactionRef = database.ref(`uploads/${cardKey}/interactions`);
+        const likeContainer = cardElement.querySelector(".like-container");
+        const commentContainer = cardElement.querySelector(".comment-container");
+
+        interactionRef.on("value", (snapshot) => {
+            const interactions = snapshot.val() || {};
+            const likes = interactions.likes || {};
+            const comments = interactions.comments || {};
+
+            // Update likes
+            const likeCount = Object.keys(likes).length;
+            likeContainer.textContent = `Likes: ${likeCount}`;
+
+            // Update comments
+            commentContainer.innerHTML = "";
+            for (const commentKey in comments) {
+                const comment = comments[commentKey];
+                const commentElement = document.createElement("div");
+                commentElement.textContent = `${comment.user}: ${comment.text}`;
+                commentContainer.appendChild(commentElement);
+            }
+        });
+    }
+
+    // Modified loadData function to include interactions
+    function loadData() {
+        const dataContainer = document.getElementById("dataContainer");
+        dataContainer.innerHTML = "";
+
+        database
+            .ref("uploads")
+            .once("value")
+            .then((snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    const data = childSnapshot.val();
+                    const key = childSnapshot.key;
+
+                    if (data.mediaUrl && data.mediaUrl.startsWith("https://")) {
+                        const card = document.createElement("div");
+                        card.className = "card";
+
+                        card.innerHTML = `
+                            <img src="${data.mediaUrl}" alt="Uploaded Media">
+                            <div class="card-title">${data.title}</div>
+                            <div class="card-description"><strong>${data.name}</strong> ${data.description}</div>
+                            <span class="show-more" data-expanded="false" onclick="toggleDescription(this)">Show more</span>
+                            <a href="${data.link}" target="_blank">Visit link</a>
+                            <div class="like-container"></div>
+                            <button onclick="addInteraction('${key}', 'like')">Like</button>
+                            <div class="comment-container"></div>
+                            <input type="text" id="comment-${key}" placeholder="Write a comment..." />
+                            <button onclick="addInteraction('${key}', 'comment', document.getElementById('comment-${key}').value)">Comment</button>
+                            <button class="delete-btn" onclick="deleteData('${key}')">Delete</button>
+                        `;
+
+                        dataContainer.appendChild(card);
+
+                        // Load interactions for this card
+                        loadInteractions(key, card);
+                    } else {
+                        console.warn("Invalid or missing mediaUrl:", data.mediaUrl);
+                    }
+                });
+            })
+            .catch((error) => {
+                console.error("Error retrieving data:", error);
+                alert("Failed to load data. Please check the console for more details.");
+            });
+    }      
+
+            // Function to delete data
+            async function deleteData(key) {
+                    try {
+                        // Delete from Firebase
+                        await database.ref('uploads/' + key).remove();
+                        alert('Deleted successfully from Firebase.');
+                        loadData(); // Refresh the data
+                    } catch (error) {
+                        console.error('Error deleting data:', error);
+                        alert('Failed to delete data. Please check the console for more details.');
+                    }
+                }
+    
+        // Load data when the page loads
+        window.onload = loadData;
+    
+        // Function to toggle description
+        function toggleDescription(element) {
+            const isExpanded = element.dataset.expanded === 'true';
+            const description = element.previousElementSibling;
+    
+            if (isExpanded) {
+                description.style.whiteSpace = 'nowrap';
+                description.style.textOverflow = 'ellipsis';
+                element.textContent = 'Show more';
+                element.dataset.expanded = 'false';
+            } else {
+                description.style.whiteSpace = 'normal';
+                description.style.textOverflow = 'clip';
+                element.textContent = 'Show less';
+                element.dataset.expanded = 'true';
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,111 @@
+<html lang="en">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forgot Password</title>
+  <script type="module" src="script/firebaseauth.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="title-text">
+      <div class="title login">Forgot Password?</div>
+    </div>
+    <div class="form-container">
+      <div class="form-inner">
+        <form action="#" class="login">
+          <div id="signInMessage" class="messageDiv" style="display:none;"></div>
+          <div id="resetMessage" class="messageDiv" style="display:none;"></div><br><br>
+          <div style="font-size: large; color: white;">Enter Your Email:</div>
+          <div id="signInMessage" class="message"></div>
+          <div class="field">
+            <input type="text" id="email" placeholder="Email" required="">
+          </div><br>
+          <div style="text-align: center;">
+            <button class="pass-link" id="resetPasswordButton">
+                Send Password Reset Link
+                <div class="hoverEffect">
+                    <div></div>
+                </div>
+            </button>
+          </div>
+
+            <div class="signup-link">Done? <a href="login.html">Login now</a></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="script/script.js"></script>
+  <script src="script/script2.js"></script>
+  <script>
+      const phoneInput = document.getElementById('lName');
+  
+      phoneInput.addEventListener('input', function (event) {
+          // Restrict input to digits only
+          this.value = this.value.replace(/\D/g, '');
+      });
+  </script> 
+  <script>
+    window.onload = function() {
+    const loggedInUserId = localStorage.getItem('loggedInUserId');
+    console.log('LoggedInUserId:', loggedInUserId);
+    if (loggedInUserId && !sessionStorage.getItem('redirected')) {
+        console.log('Redirecting to homepage');
+        sessionStorage.setItem('redirected', 'true');
+        window.location.href = 'homepage.html';
+    } else {
+        console.log('No redirection');
+        sessionStorage.removeItem('redirected');
+    }
+};
+</script>
+<script>
+    // Toggle for Login form password field
+    document.getElementById('togglePassword').addEventListener('click', function (e) {
+        const password = document.getElementById('password');
+        if (password.type === 'password') {
+            password.type = 'text';
+            this.textContent = 'Hide';
+        } else {
+            password.type = 'password';
+            this.textContent = 'Show';
+        }
+    });
+
+    // Toggle for Signup form password field
+    document.getElementById('toggleRPassword').addEventListener('click', function (e) {
+        const rPassword = document.getElementById('rPassword');
+        if (rPassword.type === 'password') {
+            rPassword.type = 'text';
+            this.textContent = 'Hide';
+        } else {
+            rPassword.type = 'password';
+            this.textContent = 'Show';
+        }
+    });
+
+    // Toggle for Signup form confirm password field
+    document.getElementById('toggleRCPassword').addEventListener('click', function (e) {
+        const rCPassword = document.getElementById('rCPassword');
+        if (rCPassword.type === 'password') {
+            rCPassword.type = 'text';
+            this.textContent = 'Hide';
+        } else {
+            rCPassword.type = 'password';
+            this.textContent = 'Show';
+        }
+    });
+
+    document.getElementById('fName').addEventListener('input', function (event) {
+    this.value = this.value.replace(/\s\s+/g, ' ');  // Replace multiple spaces with a single space
+});
+
+    document.getElementById('submitSignUp').addEventListener('click', function (event) {
+    const fullNameInput = document.getElementById('fName');
+    // Trim the trailing spaces before submission
+    fullNameInput.value = fullNameInput.value.trim();
+});
+</script>
+<script type="module" src="script/homepage.js"></script>
+
+</body></html>
