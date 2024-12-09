@@ -1,11 +1,32 @@
 
-<html lang="en">
-  <head>
+<html lang="en"><head></head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register &amp; Login</title>
-  <script type="module" src="script/firebaseauth.js"></script>
   <link rel="stylesheet" href="css/login.css">
+  <style>
+    .field {
+      position: relative;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 0.9em;
+      color: #007bff;
+      user-select: none;
+      background-color: transparent;
+      border: none;
+    }
+    .hide{
+      display: none;
+      cursor: not-allowed;
+    }
+  </style>
+  <script type="module" src="script/firebaseauth.js"></script>
 </head>
 <body>
   <div class="wrapper">
@@ -37,8 +58,11 @@
 
           <button class="btn" id="submitSignUp">
             Sign Up
-          </button>
-          <div class="signup-link">Done Signup? <a href="login.html">Login now</a></div>
+            <div class="hoverEffect">
+              <div></div>
+            </div>
+          </button><br><br>
+          <div class="signup-link">Done? <a href="login.html">Login now</a></div>
         </form>
       </div>
     </div>
@@ -106,7 +130,7 @@
 
     document.getElementById('fName').addEventListener('input', function (event) {
     // Allow spaces between words, but trim any trailing spaces at the end of the input
-    this.value = this.value.replace(/\s\s+/g, ' ');  
+    this.value = this.value.replace(/\s\s+/g, ' ');  // Replace multiple spaces with a single space
 });
 
 document.getElementById('submitSignUp').addEventListener('click', function (event) {
@@ -115,7 +139,6 @@ document.getElementById('submitSignUp').addEventListener('click', function (even
     fullNameInput.value = fullNameInput.value.trim();
 });
 </script>
-<script type="module" src="script/homepage.js"></script>
 </body>
-<button id="resetPasswordButton"  style="display: none;">Hide</button>
+<button id="resetPasswordButton" class="hide">Hide</button>
 </html>

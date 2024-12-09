@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Users</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      text-align: center;
+    }
+
+    h1 {
+      color: #007bff;
+    }
+
+    .profile-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .profile-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 100px;
+    }
+
+    .profile-item img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+    }
+
+    .profile-item img:hover {
+      transform: scale(1.1);
+    }
+
+    .profile-name {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #555;
+      word-wrap: break-word;
+    }
+  </style>
+  <!-- Import the ES6 Firebase SDK modules -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBeNJSFm34wAfSme7fCQHaO6XAe0-lZAsw",
+    authDomain: "smsa-e4136.firebaseapp.com",
+    databaseURL: "https://smsa-e4136-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "smsa-e4136",
+    storageBucket: "smsa-e4136.firebasestorage.app",
+    messagingSenderId: "613252061504",
+    appId: "1:613252061504:web:4bc7abecf49bd4b0fc02a5"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    // Fetch profiles from Realtime Database
+    const profileListContainer = document.getElementById('profile-list');
+
+    const fetchProfiles = () => {
+      const profilesRef = ref(database, 'profiles');
+      onValue(profilesRef, (snapshot) => {
+        const profiles = snapshot.val();
+        profileListContainer.innerHTML = ''; // Clear current content
+
+        if (profiles) {
+          for (const id in profiles) {
+            const { name, profilePicture } = profiles[id];
+
+            // Create profile item
+            const profileItem = document.createElement('div');
+            profileItem.className = 'profile-item';
+
+            const img = document.createElement('img');
+            img.src = profilePicture;
+            img.alt = name;
+
+            const profileName = document.createElement('div');
+            profileName.className = 'profile-name';
+            profileName.textContent = name;
+
+            profileItem.appendChild(img);
+            profileItem.appendChild(profileName);
+
+            profileListContainer.appendChild(profileItem);
+          }
+        }
+      });
+    };
+
+    fetchProfiles();
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Users Of ShareNest</h1>
+    <div id="profile-list" class="profile-list"></div>
+  </div>
+</body>
+</html>

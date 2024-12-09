@@ -1,115 +1,474 @@
-
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register &amp; Login</title>
-  <script type="module" src="script/firebaseauth.js"></script>
-  <link rel="stylesheet" href="css/login.css">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Uploaded Data</title>
+    <!-- Load Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script type="module" src="script/homepage.js"></script>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body General Styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fafafa;
+            color: #262626;
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.8em;
+            padding: 0 10px;
+        }
+
+        /* Main Data Container */
+        #dataContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Cards */
+        .card {
+            background-color: #ffffff;
+            border: 1px solid #dbdbdb;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            position: relative;
+        }
+
+        /* Media in the Card */
+        .card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+        }
+
+        /* Title & Description */
+        .card-title {
+            font-size: 50px;
+            font-weight: 600;
+            margin: 10px 0;
+            padding: 0 5px;
+        }
+
+        .card-description {
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            max-height: 40px;
+            /* Adjust as needed */
+            font-size: 0.9em;
+            color: #8e8e8e;
+            word-wrap: break-word;
+            padding-left: 5px;
+        }
+
+        .show-more {
+            cursor: pointer;
+            color: #0062ff;
+            padding-left: 5px;
+            display: none;
+            /* Hidden by default */
+        }
+
+        .comment{
+            border-radius: 20px;
+            padding-left: 10px;
+            margin-right: 10px;
+        }
+
+        /* Footer - Like, Comments and Buttons */
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 5px;
+            border-top: 1px solid #dbdbdb;
+            font-size: 0.9em;
+            gap: 5px;
+
+        }
+
+        /* Comments Section */
+        .comment-container {
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 8px 10px;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            color: #333;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            background: #f8f8f8;
+        }
+
+        /* Each individual comment styling */
+        .comment-container div {
+            padding: 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .comment-container div:last-child {
+            border-bottom: none;
+        }
+
+        /* Comment Input */
+        .comment-box {
+            display: flex;
+            align-items: center;
+            border: 1px solid #dbdbdb;
+            padding: 8px 10px;
+            border-radius: 8px;
+            gap: 8px;
+            background: #ffffff;
+            margin-top: 5px;
+        }
+
+        .comment-box input[type="text"] {
+            flex-grow: 1;
+            border: none;
+            outline: none;
+            font-size: 0.9em;
+            color: #333;
+        }
+
+        .comment-box button {
+            background: #0062ff;
+            border: none;
+            color: white;
+            padding: 6px 10px;
+            font-size: 0.9em;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .comment-box button:hover {
+            background: #004bb5;
+        }
+
+        /* Scrollbars */
+        .comment-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .comment-container::-webkit-scrollbar-thumb {
+            background-color: #999;
+            border-radius: 4px;
+        }
+
+        .comment-container::-webkit-scrollbar-track {
+            background-color: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .like-container {
+            padding-left: 5px;
+        }
+
+
+        /* Buttons */
+        .buttons-container {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+        }
+
+        button {
+            background-color: #3897f0;
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            font-size: 0.9em;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #2176ff;
+        }
+
+        /* Heart Animation */
+        .heart {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 200px;
+            color: red;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        @keyframes heartPop {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive Media Query */
+        @media (max-width: 768px) {
+            #dataContainer {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .card img {
+                height: auto;
+            }
+
+            .card-title {
+                font-size: 0.9em;
+            }
+
+            button {
+                padding: 6px 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #dataContainer {
+                grid-template-columns: 1fr;
+            }
+
+            .card img {
+                height: auto;
+            }
+        }
+    </style>
 </head>
+
 <body>
-  <div class="wrapper">
-    <div class="title-text">
-      <div class="title login">Login Form</div>
-    </div>
-    <div class="form-container">
-      <div class="form-inner">
-        <form action="#" class="login">
-          <div id="signInMessage" class="messageDiv" style="display:none;"></div>
-          <div id="resetMessage" class="messageDiv" style="display:none;"></div>
-          <div class="field">
-            <input type="text" id="email" placeholder="Email" required="">
-          </div>
-          <div class="field">
-            <input type="password" id="password" placeholder="Password" required="" autocomplete="off">
-            <span id="togglePassword" class="toggle-password">Show</span>
-          </div><br>
-          <div class="pass-link"><a href="forgotpasswoed.html" style="color: rgb(255, 38, 0);"><b>Incorrect/Forgot Password? <br>Click Here</b></a></div><br><br>
+    <!-- Display loggedUserFName dynamically -->
+    <span id="loggedUserFName" style="color: rgb(0, 0, 0); font-size: large; display: none"></span>
+    <div id="dataContainer"></div>
 
-          <button class="btn" id="submitSignIn" type="button">Login
-            <div class="hoverEffect">
-              <div></div>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBeNJSFm34wAfSme7fCQHaO6XAe0-lZAsw",
+            authDomain: "smsa-e4136.firebaseapp.com",
+            databaseURL: "https://smsa-e4136-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "smsa-e4136",
+            storageBucket: "smsa-e4136.firebasestorage.app",
+            messagingSenderId: "613252061504",
+            appId: "1:613252061504:web:4bc7abecf49bd4b0fc02a5"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Function to add interaction (like or comment)
+        function addInteraction(cardKey, interactionType, commentText = "") {
+            const loggedUserFNameName = document.getElementById("loggedUserFName").textContent;
+
+            if (!loggedUserFNameName) {
+                alert("You must log");
+                return;
+            }
+
+            const interactionRef = database.ref(`uploads/${cardKey}/interactions`);
+
+            if (interactionType === "like") {
+                interactionRef.child("likes").child(loggedUserFNameName).set(true);
+            } else if (interactionType === "comment") {
+                // Prevent blank comments (only spaces or empty input)
+                if (!commentText.trim()) {
+                    alert("Comment cannot be blank.");
+                    return;
+                }
+
+                const commentKey = interactionRef.child("comments").push().key;
+                interactionRef.child("comments").child(commentKey).set({
+                    loggedUserFName: loggedUserFNameName,
+                    text: commentText,
+                    timestamp: new Date().toISOString(),
+                });
+            }
+
+        }
+
+        // Function to load interactions and display them dynamically
+        function loadInteractions(cardKey, cardElement) {
+            const interactionRef = database.ref(`uploads/${cardKey}/interactions`);
+            const likeContainer = cardElement.querySelector(".like-container");
+            const commentContainer = cardElement.querySelector(".comment-container");
+
+            interactionRef.on("value", (snapshot) => {
+                const interactions = snapshot.val() || {};
+                const likes = interactions.likes || {};
+                const comments = interactions.comments || {};
+
+                likeContainer.textContent = `Likes: ${Object.keys(likes).length}`;
+
+                commentContainer.innerHTML = "";
+
+                if (Object.keys(comments).length === 0) {
+                    // Display 'No comments yet' if there are no comments
+                    const noCommentsEl = document.createElement("div");
+                    noCommentsEl.textContent = "No comments yet";
+                    noCommentsEl.style.fontStyle = "italic";
+                    noCommentsEl.style.color = "#666";
+                    commentContainer.appendChild(noCommentsEl);
+                } else {
+                    for (const commentKey in comments) {
+                        const comment = comments[commentKey];
+                        const commentElement = document.createElement("div");
+                        commentElement.textContent = `${comment.loggedUserFName}: ${comment.text}`;
+                        commentContainer.appendChild(commentElement);
+                    }
+                }
+                });
+        }
+
+        function handleDoubleTap(cardKey, cardElement) {
+            const loggedUserFNameName = document.getElementById("loggedUserFName").textContent;
+
+            if (!loggedUserFNameName) {
+                alert("You must log in or ensure loggedUserFName is available.");
+                return;
+            }
+
+            // Add like to Firebase
+            const interactionRef = database.ref(`uploads/${cardKey}/interactions`);
+            interactionRef.child("likes").child(loggedUserFNameName).set(true);
+
+            // Show heart animation
+            const heartElement = cardElement.querySelector(".heart");
+            heartElement.style.display = "block"; // Ensure it's visible
+            heartElement.style.animation = "heartPop 1s ease-in-out";
+            heartElement.style.opacity = "1";
+
+            // Remove the heart animation after 1 second
+            setTimeout(() => {
+                heartElement.style.animation = ""; // Reset animation
+                heartElement.style.opacity = "0"; // Make it invisible
+                heartElement.style.display = "none"; // Hide it completely
+            }, 1000);
+        }
+
+
+        async function deleteData(key) {
+            try {
+                await database.ref('uploads/' + key).remove();
+                alert('Deleted successfully!');
+                loadData();
+            } catch (error) {
+                console.error('Error deleting data:', error);
+                alert('Failed to delete data.');
+            }
+        }
+
+        function checkShowMore(cardElement) {
+            const descriptionEl = cardElement.querySelector('.card-description');
+            const showMoreEl = cardElement.querySelector('.show-more');
+
+            // If description height exceeds the visible area, show the button
+            if (descriptionEl.scrollHeight > descriptionEl.offsetHeight) {
+                showMoreEl.style.display = 'inline';
+            } else {
+                showMoreEl.style.display = 'none';
+            }
+        }
+
+        function toggleDescription(el) {
+            const cardElement = el.closest('.card');
+            const descriptionEl = cardElement.querySelector('.card-description');
+
+            if (descriptionEl.style.maxHeight === 'none') {
+                descriptionEl.style.maxHeight = '40px';
+                el.innerText = 'Show more';
+            } else {
+                descriptionEl.style.maxHeight = 'none';
+                el.innerText = 'Show less';
+            }
+        }
+
+        // Load Data and Check "Show More" Visibility
+        function loadData() {
+            const dataContainer = document.getElementById("dataContainer");
+            dataContainer.innerHTML = "";
+
+            database
+                .ref("uploads")
+                .once("value")
+                .then((snapshot) => {
+                    snapshot.forEach((childSnapshot) => {
+                        const data = childSnapshot.val();
+                        const key = childSnapshot.key;
+
+                        if (data.mediaUrl?.startsWith("https://")) {
+                            const card = document.createElement("div");
+                            card.className = "card";
+
+                            card.innerHTML = `
+            <div ondblclick="handleDoubleTap('${key}', this)">
+              <div class="heart">❤️</div>
+              <img src="${data.mediaUrl}" alt="Uploaded Media">
+              <div class="card-title" style="font-size:30px;">${data.title}</div>
+              <div class="card-description"><strong>${data.name}</strong> ${data.description}</div>
+              <span class="show-more" onclick="toggleDescription(this)">Show more</span>
+              <div class="like-container"></div>
+              <button onclick="addInteraction('${key}', 'like')" style="display:none">Like</button>
+              <div class="comment-container"></div>
+              <input class="comment" type="text" id="comment-${key}" placeholder="Write a comment..." />
+              <button onclick="addInteraction('${key}', 'comment', document.getElementById('comment-${key}').value)">Comment</button>
+              <button class="delete-btn" onclick="deleteData('${key}')" style="display:none">Delete</button>
+              <button><a href="${data.link}" target="_blank" style="text-decoration:none; color:white">Visit link</a></button>
             </div>
-          </button>
+          `;
 
-          <div class="signup-link">Not a member? <a href="signup.html">Signup now</a></div>
-        </form>
-      </div>
-    </div>
-  </div>
-  <script src="script/script.js"></script>
-  <script src="script/script2.js"></script>
-  <script>
-      const phoneInput = document.getElementById('lName');
-  
-      phoneInput.addEventListener('input', function (event) {
-          // Restrict input to digits only
-          this.value = this.value.replace(/\D/g, '');
-      });
-  </script> 
-  <script>
-    window.onload = function() {
-    const UserId = localStorage.getItem('UserId');
-    console.log('UserId:', UserId);
-    if (UserId && !sessionStorage.getItem('redirected')) {
-        console.log('Redirecting to homepage');
-        sessionStorage.setItem('redirected', 'true');
-        window.location.href = 'index.html';
-    } else {
-        console.log('No redirection');
-        sessionStorage.removeItem('redirected');
-    }
-};
-</script>
-<script>
-    // Toggle for Login form password field
-    document.getElementById('togglePassword').addEventListener('click', function (e) {
-        const password = document.getElementById('password');
-        if (password.type === 'password') {
-            password.type = 'text';
-            this.textContent = 'Hide';
-        } else {
-            password.type = 'password';
-            this.textContent = 'Show';
+                            dataContainer.appendChild(card);
+
+                            checkShowMore(card);
+                            loadInteractions(key, card);
+                        } else {
+                            console.warn("Invalid or missing mediaUrl:", data.mediaUrl);
+                        }
+                    });
+                })
+                .catch((error) => {
+                    console.error("Error loading data:", error);
+                    alert("Failed to load data");
+                });
         }
-    });
 
-    // Toggle for Signup form password field
-    document.getElementById('toggleRPassword').addEventListener('click', function (e) {
-        const rPassword = document.getElementById('rPassword');
-        if (rPassword.type === 'password') {
-            rPassword.type = 'text';
-            this.textContent = 'Hide';
-        } else {
-            rPassword.type = 'password';
-            this.textContent = 'Show';
-        }
-    });
 
-    // Toggle for Signup form confirm password field
-    document.getElementById('toggleRCPassword').addEventListener('click', function (e) {
-        const rCPassword = document.getElementById('rCPassword');
-        if (rCPassword.type === 'password') {
-            rCPassword.type = 'text';
-            this.textContent = 'Hide';
-        } else {
-            rCPassword.type = 'password';
-            this.textContent = 'Show';
-        }
-    });
-
-    document.getElementById('fName').addEventListener('input', function (event) {
-    // Allow spaces between words, but trim any trailing spaces at the end of the input
-    this.value = this.value.replace(/\s\s+/g, ' ');  
-});
-
-document.getElementById('submitSignUp').addEventListener('click', function (event) {
-    const fullNameInput = document.getElementById('fName');
-    // Trim the trailing spaces before submission
-    fullNameInput.value = fullNameInput.value.trim();
-});
-</script>
-<script type="module" src="script/homepage.js"></script>
+        // Load data on page load
+        window.onload = loadData;
+    </script>
 </body>
-<button id="resetPasswordButton"  style="display: none;">Hide</button>
+
 </html>

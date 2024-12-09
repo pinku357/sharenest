@@ -6,29 +6,28 @@
     <title>Simple Upload Website</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    
+    <!-- Load scripts dynamically -->
     <script type="module" src="script/homepage.js"></script>
     <script type="module" src="script/firebaseauth.js"></script>
+    <script type="module" src="script/prifile.js"></script>
+    
     <style>
+        div {
+            margin-top: 50%;
+        }
         body {
             font-family: Arial, sans-serif;
             max-width: 600px;
             margin: auto;
             padding: 20px;
         }
-        input {
+        input, textarea {
             display: block;
             width: 90%;
             margin-bottom: 10px;
             padding: 8px;
             border-radius: 20px;
-        }
-        textarea {
-            display: block;
-            width: 90%;
-            margin-bottom: 10px;
-            padding: 8px;
-            border-radius: 20px;
-            height: 150px;
         }
         button {
             padding: 10px 15px;
@@ -36,24 +35,24 @@
             color: white;
             border: none;
             cursor: pointer;
-            font-size: 20px;
         }
-        span{
+        span {
             color: #007bff;
         }
     </style>
 </head>
 <body>
-    <h2><span id="loggedUserFName"></span> Uploading...</h2><br><br>
-
-    <input type="text" id="title" placeholder="Enter a title">
-    <input type="url" id="link" placeholder="Enter a link">
-    <textarea id="description" placeholder="Enter a description"></textarea>
-    <input type="file" id="mediaUpload">
-    <button onclick="uploadData()">Upload</button>
-
+    <div>
+        <h2>Upload Your 1st File To ShareNest <span id="loggedUserFName"></span></h2>
+        <br>
+        <input type="text" id="title" placeholder="Enter a title">
+        <input type="url" id="link" placeholder="Enter a link">
+        <textarea id="description" placeholder="Enter a description"></textarea>
+        <input type="file" id="mediaUpload">
+        <button onclick="uploadData()">Upload</button>
+    </div>
+    
     <script>
-        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBeNJSFm34wAfSme7fCQHaO6XAe0-lZAsw",
             authDomain: "smsa-e4136.firebaseapp.com",
@@ -64,65 +63,69 @@
             appId: "1:613252061504:web:4bc7abecf49bd4b0fc02a5"
         };
         
-        // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-
+    </script>    
+    <script>
         async function uploadToCloudinary(file) {
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('upload_preset', 'pinku_preset'); // upload preset
-            
+            formData.append('upload_preset', 'pinku_preset');
+    
             const response = await fetch('https://api.cloudinary.com/v1_1/djfjn4ykb/image/upload', {
                 method: 'POST',
                 body: formData
             });
-            
+    
             const data = await response.json();
-            return data.secure_url;
+            console.log("Cloudinary response:", data); // Debugging log
+            return data.secure_url; 
         }
-
+    
         async function uploadData() {
             const uploadButton = document.querySelector('button');
-            uploadButton.disabled = true; 
+            uploadButton.disabled = true; // Disable the button to prevent multiple clicks
+    
             const loggedUserFNameName = document.getElementById('loggedUserFName').textContent;
             const title = document.getElementById('title').value;
             const link = document.getElementById('link').value;
             const description = document.getElementById('description').value;
             const mediaFile = document.getElementById('mediaUpload').files[0];
-
+    
             if (!title || !link || !description || !mediaFile) {
                 alert('Please fill out all fields and upload a file.');
-                uploadButton.disabled = false;
+                uploadButton.disabled = false; // Re-enable the button
                 return;
             }
-
+    
             try {
+                console.log("Uploading file to Cloudinary...");
                 const mediaUrl = await uploadToCloudinary(mediaFile);
-
-                const newDataRef = database.ref('uploads').push();
-                newDataRef.set({
+    
+                console.log("Media URL from Cloudinary:", mediaUrl);
+    
+                const newDataRef = firebase.database().ref('uploads').push();
+                console.log("Attempting to write data to Firebase...");
+    
+                await newDataRef.set({
                     name: loggedUserFNameName,
                     title: title,
                     link: link,
                     description: description,
                     mediaUrl: mediaUrl
                 });
-                
+    
+                console.log("Data written successfully to Firebase.");
                 alert('Data uploaded successfully!');
-                document.getElementById('loggedUserFNameName').value = '';
-                document.getElementById('title').value = '';
-                document.getElementById('link').value = '';
-                document.getElementById('description').value = '';
-                document.getElementById('mediaUpload').value = '';
-
-                location.reload();
+                window.location.href = 'index.html';
             } catch (error) {
-                console.error('Error uploading data:', error);
-            }finally {
-            uploadButton.disabled = false; // Re-enable the button after the operation is complete
-        }
+                console.error("Error during upload or write to Firebase:", error);
+                alert('An error occurred. Please try again.');
+            } finally {
+                uploadButton.disabled = false; 
+            }
         }
     </script>    
+      
 </body>
 </html>

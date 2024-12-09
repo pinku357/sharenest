@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Details</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .media-container {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .media-container img,
+    .media-container video {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .info-container {
+      margin-top: 20px;
+    }
+
+    .info-container .description {
+      max-width: 100%;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      line-height: 1.5;
+    }
+
+    .comments-section {
+      margin-top: 30px;
+    }
+
+    .comment {
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
+    }
+
+    .comment:last-child {
+      border-bottom: none;
+    }
+  </style>
+  <!-- Firebase Compatibility Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-database-compat.js"></script>
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBeNJSFm34wAfSme7fCQHaO6XAe0-lZAsw",
+      authDomain: "smsa-e4136.firebaseapp.com",
+      databaseURL: "https://smsa-e4136-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "smsa-e4136",
+      storageBucket: "smsa-e4136.firebasestorage.app",
+      messagingSenderId: "613252061504",
+      appId: "1:613252061504:web:4bc7abecf49bd4b0fc02a5"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    window.onload = function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      const itemId = urlParams.get('id');
+
+      if (!itemId) {
+        alert('No item ID provided!');
+        return;
+      }
+
+      const itemRef = database.ref(`uploads/${itemId}`);
+      itemRef.once('value', snapshot => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+
+          // Display media
+          const mediaContainer = document.querySelector('.media-container');
+          let optimizedUrl = data.mediaUrl;
+          if (data.mediaUrl.includes('cloudinary')) {
+            optimizedUrl = data.mediaUrl.replace('/upload/', '/upload/w_auto,q_auto/');
+          }
+
+          const mediaElement = document.createElement(data.mediaUrl.endsWith('.mp4') ? 'video' : 'img');
+          mediaElement.src = optimizedUrl;
+          if (data.mediaUrl.endsWith('.mp4')) mediaElement.controls = true;
+          mediaElement.alt = data.title;
+          mediaContainer.appendChild(mediaElement);
+
+          // Display details
+          document.querySelector('.title').textContent = data.title;
+          document.querySelector('.description').textContent = data.description;
+          document.querySelector('.name').textContent = `Posted by: ${data.name}`;
+          document.querySelector('.likes').textContent = `Likes: ${data.interactions.likes}`;
+          document.querySelector('.link').innerHTML = `<a href="${data.link}" target="_blank">Visit Link</a>`;
+
+          // Display comments
+          const commentsSection = document.querySelector('.comments-section');
+          if (data.interactions.comments) {
+            Object.values(data.interactions.comments).forEach(comment => {
+              const commentElement = document.createElement('div');
+              commentElement.classList.add('comment');
+              commentElement.innerHTML = `
+                <p><strong>${comment.loggedUserFName}</strong>: ${comment.text}</p>
+                <p style="font-size: 0.9em; color: gray;">${new Date(comment.timestamp).toLocaleString()}</p>
+              `;
+              commentsSection.appendChild(commentElement);
+            });
+          } else {
+            commentsSection.textContent = 'No comments yet.';
+          }
+        } else {
+          alert('Item not found!');
+        }
+      });
+    };
+  </script>
+</head>
+
+<body>
+  <div class="media-container"></div>
+  <div class="info-container">
+    <h2 class="title"></h2>
+    <p class="description"></p>
+    <p class="name"></p>
+    <p class="likes"></p>
+    <p class="link"></p>
+  </div>
+  <div class="comments-section">
+    <h3>Comments</h3>
+  </div>
+</body>
+
+</html>

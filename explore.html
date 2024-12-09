@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      grid-auto-rows: 150px;
+      gap: 10px;
+      padding: 10px;
+    }
+    .grid-item {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .grid-item img, .grid-item video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+    /* Dynamic aspect ratio for each item */
+    .grid-item[data-aspect="wide"] {
+      grid-column: span 2;
+    }
+    .grid-item[data-aspect="tall"] {
+      grid-row: span 2;
+    }
+    .grid-item[data-aspect="large"] {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+    @media (max-width: 768px) {
+      .grid-container {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        grid-auto-rows: 100px;
+      }
+    }
+  </style>
+  <!-- Firebase Compatibility Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-database-compat.js"></script>
+</head>
+<body>
+  <div class="grid-container"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyBeNJSFm34wAfSme7fCQHaO6XAe0-lZAsw",
+        authDomain: "smsa-e4136.firebaseapp.com",
+        databaseURL: "https://smsa-e4136-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "smsa-e4136",
+        storageBucket: "smsa-e4136.firebasestorage.app",
+        messagingSenderId: "613252061504",
+        appId: "1:613252061504:web:4bc7abecf49bd4b0fc02a5"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const database = firebase.database();
+
+      const gridContainer = document.querySelector('.grid-container');
+
+      function fetchAndRenderGrid() {
+        database.ref('uploads').once('value', snapshot => {
+          const mediaItems = [];
+          snapshot.forEach(doc => {
+            const data = doc.val();
+            mediaItems.push({ id: doc.key, ...data });
+          });
+
+          // Shuffle media items for random layout
+          mediaItems.sort(() => Math.random() - 0.5);
+
+          // Clear the grid
+          gridContainer.innerHTML = '';
+
+          // Add shuffled media items to the grid
+          mediaItems.forEach(item => {
+            let optimizedUrl = item.mediaUrl;
+            if (item.mediaUrl.includes('cloudinary')) {
+              optimizedUrl = item.mediaUrl.replace('/upload/', '/upload/w_auto,q_auto/');
+            }
+
+            const mediaElement = document.createElement(item.mediaUrl.endsWith('.mp4') ? 'video' : 'img');
+            mediaElement.src = optimizedUrl;
+            mediaElement.controls = item.mediaUrl.endsWith('.mp4');
+            mediaElement.alt = item.title;
+
+            const gridItem = document.createElement('div');
+            gridItem.classList.add('grid-item');
+
+            // Assign random aspect ratio styles
+            const randomAspect = ['wide', 'tall', 'large', ''][Math.floor(Math.random() * 4)];
+            if (randomAspect) gridItem.dataset.aspect = randomAspect;
+
+            gridItem.appendChild(mediaElement);
+
+            gridItem.onclick = () => {
+              window.location.href = `details.html?id=${item.id}`;
+            };
+
+            gridContainer.appendChild(gridItem);
+          });
+        });
+      }
+
+      // Fetch and render the grid
+      fetchAndRenderGrid();
+    });
+  </script>
+</body>
+</html>

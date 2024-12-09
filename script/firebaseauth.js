@@ -7,6 +7,7 @@ import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10
 const firebaseConfig = {
     apiKey: "AIzaSyBeNJSFm34wAfSme7fCQHaO6XAe0-lZAsw",
     authDomain: "smsa-e4136.firebaseapp.com",
+    databaseURL: "https://smsa-e4136-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "smsa-e4136",
     storageBucket: "smsa-e4136.firebasestorage.app",
     messagingSenderId: "613252061504",
@@ -74,10 +75,10 @@ signUp.addEventListener('click', async (event) => {
     const email = document.getElementById('rEmail').value;
     const password = document.getElementById('rPassword').value;
     const confirmPassword = document.getElementById('rCPassword').value;
-    const userName = document.getElementById('fName').value;
+    const firstName = document.getElementById('fName').value;
     const phoneNo = document.getElementById('lName').value;
 
-    if (!email || !password || !confirmPassword || !userName || !phoneNo) {
+    if (!email || !password || !confirmPassword || !firstName || !phoneNo) {
         showMessage('Please fill out all fields.', 'signUpMessage');
         return;
     }
@@ -92,15 +93,15 @@ signUp.addEventListener('click', async (event) => {
         const user = userCredential.user;
         const userData = {
             email: email,
-            Name: userName,
+            firstName: firstName,
             phoneNo: phoneNo
         };
 
         const docRef = doc(db, "users", user.uid);
         await setDoc(docRef, userData);
-        showMessage('Account created successfully.', 'signUpMessage');
+        showMessage('Account created successfully. Redirecting...', 'signUpMessage');
         setTimeout(() => {
-            window.location.href = 'index.html';
+            window.location.href = 'profile.html';
         }, 2000);
     } catch (error) {
         const errorCode = error.code;
@@ -127,10 +128,10 @@ signIn.addEventListener('click', async (event) => {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        localStorage.setItem('UserId', user.uid);
-        showMessage('Login successful.', 'signInMessage');
+        localStorage.setItem('loggedInUserId', user.uid);
+        showMessage('Login successful. Redirecting...', 'signInMessage');
         setTimeout(() => {
-            window.location.href = 'index.html';
+            window.location.href = 'profile.html';
         }, 2000);
     } catch (error) {
         const errorCode = error.code;

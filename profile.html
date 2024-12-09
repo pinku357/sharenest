@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Upload</title>
+    <script type="module" src="script/homepage.js"></script>
+    <script type="module" src="script/prifile.js"></script>
+    <link rel="stylesheet" href="css/profile.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Upload <br>Profile Picture</h1>
+        <form id="profileForm">
+            <label for="name">Name:</label>
+            <span id="loggedUserFName" style="color: rgb(0, 0, 0);"></span><br><br>
+
+            <label for="email">Email:</label>
+            <span id="loggedUserEmail"></span><br><br>
+
+            <label for="profilePic">Profile Picture (max 1MB):</label>
+            <input type="file" id="profilePic" name="profilePic" accept="image/*" required>
+            <div class="error" id="fileError"></div>
+
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+
+    <!-- Firebase Configuration -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+
+    <!-- Firebase Initialization -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBeNJSFm34wAfSme7fCQHaO6XAe0-lZAsw",
+            authDomain: "smsa-e4136.firebaseapp.com",
+            databaseURL: "https://smsa-e4136-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "smsa-e4136",
+            storageBucket: "smsa-e4136.firebasestorage.app",
+            messagingSenderId: "613252061504",
+            appId: "1:613252061504:web:4bc7abecf49bd4b0fc02a5"
+        };
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+    </script>
+    
+      
+</body>
+
+</html>
