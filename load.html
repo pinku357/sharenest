@@ -96,8 +96,8 @@
             margin-right: 5px;
             padding-top: 4px;
             padding-bottom: 4px;
-            font-size: 14px;
-            max-width: 145px;
+            font-size: 12px;
+            max-width: 130px;
         }
 
         /* Footer - Like, Comments and Buttons */
@@ -205,7 +205,7 @@
             border: none;
             color: white;
             padding: 8px 12px;
-            font-size: 0.8em;
+            font-size: 0.7em;
             border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.2s ease;
@@ -447,7 +447,7 @@
               <div class="card-description"><strong>${data.name}</strong> ${data.description}</div>
               <span class="show-more" onclick="toggleDescription(this)">Show more</span><br><br>
               <button onclick="addInteraction('${key}', 'like')" style="display:none">Like</button>
-              <input class="comment" type="text" id="comment-${key}" placeholder="Write a comment..." />
+              <input class="comment" type="text" id="comment-${key}" placeholder="Write A comment..." />
               <button onclick="addInteraction('${key}', 'comment', document.getElementById('comment-${key}').value)">Comment</button>
               <button class="delete-btn" onclick="deleteData('${key}')" style="display:none">Delete</button>
               <button><a href="${data.link}" target="_blank" style="text-decoration:none; color:white">Visit link</a></button>

@@ -1,5 +1,5 @@
 const CACHE_NAME = "my-cache-v1";
-const urlsToCache = ["/", "/index.html", "/css/homepage.css", "/script/homepage.js"];
+const urlsToCache = ["/", "/homepage.html", "/css/homepage.css", "/script/homepage.js"];
 
 self.addEventListener("install", event => {
   event.waitUntil(
