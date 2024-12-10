@@ -1,7 +1,8 @@
 <html lang="en"><head></head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register &amp; Login</title>
+  <title>ShareNest</title>
+  <link rel="manifest" href="/manifest.json">
   <link rel="icon" href="logo.png" type="image/png">
   <style>
         body {
@@ -56,7 +57,7 @@
     </style>
 </head>
 <body>
-    <img src="styles/images/verify.gif" alt="Maintenance GIF" class="centered-gif">
+    <img src="css/verify.gif" alt="Maintenance GIF" class="centered-gif">
     <div class="message">
         Verifying your login status
     </div>
@@ -86,5 +87,13 @@
     }
 };
 </script>
+<script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").then(() => {
+        console.log("Service Worker registered");
+      });
+    }
+  </script>
+  
 </body>
 </html>

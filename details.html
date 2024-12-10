@@ -79,6 +79,8 @@
       itemRef.once('value', snapshot => {
         if (snapshot.exists()) {
           const data = snapshot.val();
+          const likes = data.interactions.likes || {};
+      const likeCount = Object.values(likes).filter(like => like === true).length;
 
           // Display media
           const mediaContainer = document.querySelector('.media-container');
@@ -97,7 +99,7 @@
           document.querySelector('.title').textContent = data.title;
           document.querySelector('.description').textContent = data.description;
           document.querySelector('.name').textContent = `Posted by: ${data.name}`;
-          document.querySelector('.likes').textContent = `Likes: ${data.interactions.likes}`;
+          document.querySelector('.likes').textContent = `Likes: ${likeCount}`;
           document.querySelector('.link').innerHTML = `<a href="${data.link}" target="_blank">Visit Link</a>`;
 
           // Display comments

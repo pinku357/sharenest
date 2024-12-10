@@ -53,8 +53,10 @@ async function fetchMediaDetails(mediaUrl) {
                 document.getElementById('mediaTitle').textContent = `Title: ${mediaDetails.title || "N/A"}`;
                 document.getElementById('mediaDescription').textContent = `Description: ${mediaDetails.description || "N/A"}`;
                 document.getElementById('mediaName').textContent = `Uploaded by: ${mediaDetails.name || "Unknown"}`;
-                document.getElementById('mediaLink').textContent = `Link: ${mediaDetails.link || "N/A"}`;
-                mediaDescription.style.maxWidth = '300px'; // Set your desired max width (e.g., 300px)
+                document.getElementById('mediaLink').innerHTML = mediaDetails.link 
+                ? `Link: <a href="${mediaDetails.link}" target="_blank" rel="noopener noreferrer">${mediaDetails.link}</a>` 
+                : "Link: N/A";
+                              mediaDescription.style.maxWidth = '300px'; // Set your desired max width (e.g., 300px)
 
                 // Optional: You can also set other styles if needed
                 mediaDescription.style.overflow = 'hidden'; // Hide overflow text

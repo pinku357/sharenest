@@ -31,7 +31,7 @@
 <body>
   <div class="wrapper">
     <div class="title-text">
-      <div class="title signup">Signup Form</div>
+      <div class="title signup">Signup</div>
     </div>
     <div class="form-container">
       <div class="form-inner">
@@ -40,17 +40,17 @@
           <div id="signUpMessage" class="message"></div>
           <div class="field">
             <input type="text" id="fName" placeholder="Full Name" required="">
-          </div>
+          </div><br>
           <div class="field">
             <input type="text" id="lName" placeholder="Phone Number" required="">
-          </div>
+          </div><br>
           <div class="field">
             <input type="text" id="rEmail" placeholder="Email" required="">
-          </div>
+          </div><br>
           <div class="field">
             <input type="password" id="rPassword" placeholder="Password" required="">
             <span id="toggleRPassword" class="toggle-password">Show</span>
-          </div>
+          </div><br>
           <div class="field">
             <input type="password" id="rCPassword" placeholder="Confirm password" required="">
             <span id="toggleRCPassword" class="toggle-password">Show</span>
@@ -92,51 +92,51 @@
 };
 </script>
 <script>
-    // Toggle for Login form password field
-    document.getElementById('togglePassword').addEventListener('click', function (e) {
-        const password = document.getElementById('password');
-        if (password.type === 'password') {
-            password.type = 'text';
-            this.textContent = 'Hide';
-        } else {
-            password.type = 'password';
-            this.textContent = 'Show';
-        }
-    });
+  // Toggle for Login form password field
+  document.getElementById('togglePassword').addEventListener('click', function (e) {
+      const password = document.getElementById('password');
+      if (password.type === 'password') {
+          password.type = 'text';
+          this.textContent = 'Hide';
+      } else {
+          password.type = 'password';
+          this.textContent = 'Show';
+      }
+  });
 
-    // Toggle for Signup form password field
-    document.getElementById('toggleRPassword').addEventListener('click', function (e) {
-        const rPassword = document.getElementById('rPassword');
-        if (rPassword.type === 'password') {
-            rPassword.type = 'text';
-            this.textContent = 'Hide';
-        } else {
-            rPassword.type = 'password';
-            this.textContent = 'Show';
-        }
-    });
+  // Toggle for Signup form password field
+  document.getElementById('toggleRPassword').addEventListener('click', function (e) {
+      const rPassword = document.getElementById('rPassword');
+      if (rPassword.type === 'password') {
+          rPassword.type = 'text';
+          this.textContent = 'Hide';
+      } else {
+          rPassword.type = 'password';
+          this.textContent = 'Show';
+      }
+  });
 
-    // Toggle for Signup form confirm password field
-    document.getElementById('toggleRCPassword').addEventListener('click', function (e) {
-        const rCPassword = document.getElementById('rCPassword');
-        if (rCPassword.type === 'password') {
-            rCPassword.type = 'text';
-            this.textContent = 'Hide';
-        } else {
-            rCPassword.type = 'password';
-            this.textContent = 'Show';
-        }
-    });
+  // Toggle for Signup form confirm password field
+  document.getElementById('toggleRCPassword').addEventListener('click', function (e) {
+      const rCPassword = document.getElementById('rCPassword');
+      if (rCPassword.type === 'password') {
+          rCPassword.type = 'text';
+          this.textContent = 'Hide';
+      } else {
+          rCPassword.type = 'password';
+          this.textContent = 'Show';
+      }
+  });
 
-    document.getElementById('fName').addEventListener('input', function (event) {
-    // Allow spaces between words, but trim any trailing spaces at the end of the input
-    this.value = this.value.replace(/\s\s+/g, ' ');  // Replace multiple spaces with a single space
+  document.getElementById('fName').addEventListener('input', function (event) {
+  // Allow spaces between words, but trim any trailing spaces at the end of the input
+  this.value = this.value.replace(/\s\s+/g, ' ');  // Replace multiple spaces with a single space
 });
 
 document.getElementById('submitSignUp').addEventListener('click', function (event) {
-    const fullNameInput = document.getElementById('fName');
-    // Trim the trailing spaces before submission
-    fullNameInput.value = fullNameInput.value.trim();
+  const fullNameInput = document.getElementById('fName');
+  // Trim the trailing spaces before submission
+  fullNameInput.value = fullNameInput.value.trim();
 });
 </script>
 </body>

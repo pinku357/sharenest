@@ -93,7 +93,10 @@
         .comment{
             border-radius: 20px;
             padding-left: 10px;
-            margin-right: 10px;
+            margin-right: 7px;
+            padding-top: 4px;
+            padding-bottom: 4px;
+            font-size: 14px;
         }
 
         /* Footer - Like, Comments and Buttons */
@@ -110,6 +113,7 @@
 
         /* Comments Section */
         .comment-container {
+            margin-top: 10px;
             max-height: 150px;
             overflow-y: auto;
             padding: 8px 10px;
@@ -200,7 +204,7 @@
             border: none;
             color: white;
             padding: 8px 12px;
-            font-size: 0.9em;
+            font-size: 0.8em;
             border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.2s ease;
@@ -438,15 +442,15 @@
               <div class="heart">❤️</div>
               <img src="${data.mediaUrl}" alt="Uploaded Media">
               <div class="card-title" style="font-size:30px;">${data.title}</div>
-              <div class="card-description"><strong>${data.name}</strong> ${data.description}</div>
-              <span class="show-more" onclick="toggleDescription(this)">Show more</span>
               <div class="like-container"></div>
+              <div class="card-description"><strong>${data.name}</strong> ${data.description}</div>
+              <span class="show-more" onclick="toggleDescription(this)">Show more</span><br><br>
               <button onclick="addInteraction('${key}', 'like')" style="display:none">Like</button>
-              <div class="comment-container"></div>
               <input class="comment" type="text" id="comment-${key}" placeholder="Write a comment..." />
               <button onclick="addInteraction('${key}', 'comment', document.getElementById('comment-${key}').value)">Comment</button>
               <button class="delete-btn" onclick="deleteData('${key}')" style="display:none">Delete</button>
               <button><a href="${data.link}" target="_blank" style="text-decoration:none; color:white">Visit link</a></button>
+              <div class="comment-container"></div>
             </div>
           `;
 

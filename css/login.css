@@ -95,7 +95,7 @@
   }
   
   /* Buttons */
-  .btn {
+  .btn, #resetPasswordButton{
     position: relative;
     background-color: #007bff;
     color: #fff;
