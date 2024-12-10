@@ -2,7 +2,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ShareNest</title>
-  <link rel="manifest" href="/manifest.json">
   <link rel="icon" href="logo.png" type="image/png">
   <style>
         body {
@@ -86,14 +85,6 @@
         window.location.href = 'login.html';
     }
 };
-</script>
-<script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").then(() => {
-        console.log("Service Worker registered");
-      });
-    }
-  </script>
-  
+</script>  
 </body>
 </html>

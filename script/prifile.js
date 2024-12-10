@@ -7,10 +7,12 @@
             const fileInput = document.getElementById('profilePic');
             const file = fileInput.files[0];
             const fileError = document.getElementById('fileError');
+            uploadButton.disabled = true;
 
             // Validate file size
             if (file.size > 1 * 1024 * 1024) {
                 fileError.textContent = 'File size must be less than 1MB.';
+                uploadButton.disabled = false;
                 return;
             }
             fileError.textContent = '';
@@ -85,6 +87,7 @@
             } else {
               console.log('No existing user found. You can proceed to upload.');
               setupForm();
+              uploadButton.disabled = false;
             }
           } catch (error) {
             console.error('Error querying database:', error);
@@ -103,7 +106,7 @@
         
               if (snapshot.exists()) {
                 console.log('User already exists in the database.');
-                window.location.href = 'index.html'; // Redirect user if already exists
+                window.location.href = 'index.html';
               } else {
                 console.log('No existing user found. You can proceed to upload.');
                 setupForm();
