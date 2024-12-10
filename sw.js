@@ -1,10 +1,10 @@
 const CACHE_NAME = "my-cache-v1";
-const urlsToCache = ["/", "/homepage.html", "/css/homepage.css", "/script/homepage.js"];
+const urlsToCache = ["/homepage.html", "/assets/icons/logo-192x192.png", "/assets/icons/logo-512x512.png"];
 
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      console.log("Opened cache");
+      console.log("Caching resources");
       return cache.addAll(urlsToCache);
     })
   );
